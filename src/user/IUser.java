@@ -39,4 +39,6 @@ public interface IUser extends Interactable {
 	
 	void addAccountToAccountGroup(String accountGroupName, int accountId);
 	
+	void displayOwnedInvestables();
+	
 }

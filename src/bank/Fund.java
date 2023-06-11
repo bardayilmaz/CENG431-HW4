@@ -25,6 +25,11 @@ public class Fund implements Investable {
 	public String toString() {
 		return "Fund [value=" + value + ", name=" + name + "]";
 	}
+
+	@Override
+	public void display() {
+		System.out.println(this.toString());
+	}
 	
 
 }

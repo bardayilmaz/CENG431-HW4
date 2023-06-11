@@ -25,8 +25,10 @@ public interface IBank {
 	int getCurrentDay();
 	
 	List<Investable> getInvestables();
+	void displayInvestables();
 	boolean investableContainsByName(String name);
 	IUser addUser(IUser user);
+	Investable getInvestableByName(String name);
 	
 	Investable createInvestable(String name, double value);
 }

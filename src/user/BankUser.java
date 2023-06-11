@@ -25,7 +25,7 @@ public class BankUser implements IUser {
 
 	@Override
 	public void displayOptions() {
-		System.out.println("1. Create Fund\n2. Determine Interest Rate\n3. Determine Value\n4. Pass Time\n5. Create New User\n6. List valuables\n0. Exit User");
+		System.out.println("1. Create Fund\n2. Determine Interest Rate\n3. Determine Value\n4. Pass Time\n5. Create New User\n6. List valuables\n7. List Investables\n0. Exit User");
 	}
 
 	@Override
@@ -76,6 +76,7 @@ public class BankUser implements IUser {
 				break;
 			}
 			try {
+				System.out.println("Type value: ");
 				value = scanner.nextDouble();
 			} catch(InputMismatchException exception) {
 				System.out.println("Invalid value input");
@@ -111,7 +112,7 @@ public class BankUser implements IUser {
 			} else if(bankUserString.equalsIgnoreCase("n")) {
 				bankUser = false;
 			} else {
-				System.out.println("invalid interest input");
+				System.out.println("invalid input");
 				return;
 			}
 			createNewUser(name, bankUser);
@@ -120,6 +121,9 @@ public class BankUser implements IUser {
 			break;
 		}	case 0: {
 			System.out.println("exit from bankuser " + this.name);
+			break;
+		} case 7: {
+			this.bank.displayInvestables();
 			break;
 		}
 		default:
@@ -213,7 +217,7 @@ public class BankUser implements IUser {
 
 	@Override
 	public IAccount getAccount(int id) {
-		System.out.println("Operation is not suppoerted for bank user");
+		System.out.println("Operation is not supperted for bank user");
 		return null;
 	}
 
@@ -242,6 +246,12 @@ public class BankUser implements IUser {
 	@Override
 	public String toString() {
 		return "BankUser [name=" + name + ", bank=" + bank + "]";
+	}
+
+	@Override
+	public void displayOwnedInvestables() {
+		System.out.println("Unsupported oepration for bank user");
+		return;
 	}
 	
 	

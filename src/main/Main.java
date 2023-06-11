@@ -27,10 +27,10 @@ public class Main {
 		int input = -1;
 		boolean terminate = false;
 		System.out.println("Welcome to Bank 413! How can we help you? - Please use names 'without' whitespaces. Thanks for your understanding ^^.");
-		while(!terminate) {
+		while(input != 0) {
 			listAppOptions();
-			int option = InputUtil.getOption();
-			evaluateAppOptions(option, bank);
+			input = InputUtil.getOption();
+			evaluateAppOptions(input, bank);
 		}
 	}
 	

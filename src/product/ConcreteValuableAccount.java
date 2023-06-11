@@ -57,6 +57,7 @@ public class ConcreteValuableAccount implements IValuableAccount {
 			IAccount regularAccount = this.user.getAccount(regularAccountId);
 			if(!(regularAccount instanceof IRegularAccount)) {
 				System.out.println("Given account is not regular account");
+				break;
 			}
 			this.transferFromRegularAccount((IRegularAccount)regularAccount, amount);
 			break;
@@ -70,8 +71,10 @@ public class ConcreteValuableAccount implements IValuableAccount {
 				break;
 			}
 			System.out.println("Expected balance in TRY in " + days + " days: " + this.getExpectedBalance(days));
+			break;
 		} case 3: {
 			System.out.println("Interest rate: " + this.getInterestRate());
+			break;
 		} case 4: {
 			int exchangedAccountId = 0;
 			double amount = 0;
@@ -85,6 +88,9 @@ public class ConcreteValuableAccount implements IValuableAccount {
 				break;
 			}
 			IAccount account = this.user.getAccount(exchangedAccountId);
+			if(account == null) {
+				break;
+			}
 			this.exchange(account, amount);
 			break;
 		} case 5: {
@@ -122,7 +128,7 @@ public class ConcreteValuableAccount implements IValuableAccount {
 		}
 		if (amount <= account.getBalance()) {
 			account.setBalance(account.getBalance() - amount);
-			double convertedBalance = amount / Euro.getInstance().getValue();
+			double convertedBalance = amount / this.getValuable().getValue();
 			setBalance(getBalance() + convertedBalance);
 		} else {
 			System.out.println("Insufficient balance.");
@@ -166,12 +172,15 @@ public class ConcreteValuableAccount implements IValuableAccount {
 			return;
 		}
 		if(amount <= 0) {
-			System.out.println("exchane amount can not be negative");
+			System.out.println("exchange amount can not be negative");
 			return;
 		}
 		if (amount <= this.getBalance()) {
 			this.setBalance(this.getBalance() - amount);
 			account.setBalance(account.getBalance() + amount);
+		} else {
+			System.out.println("amount is larger than balance");
+			return;
 		}
 		if(this.getInterestRate() > 0 || account.getInterestRate() > 0) {
 			this.dailyExchangedInterestAccounts.add(account);

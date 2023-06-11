@@ -130,9 +130,6 @@ public class ConcreteBank implements IBank {
 			}
 		}
 		user.setBank(this);
-		if(user.isBankUser()) {
-			user.createAccount("regular", false);
-		}
 		this.users.add(user);
 		return user;
 	}
@@ -181,5 +178,22 @@ public class ConcreteBank implements IBank {
 		System.out.println(TurkishLira.getInstance().toString());
 		System.out.println(Gold.getInstance().toString());
 	}
-	
+
+	@Override
+	public void displayInvestables() {
+		for(Investable investable : this.investables) {
+			investable.display();
+		}
+	}
+
+	@Override
+	public Investable getInvestableByName(String name) {
+		for(Investable investable : this.investables) {
+			if(investable.getName().equalsIgnoreCase(name)) {
+				return investable;
+			}
+		}
+		System.out.println("Investable not found");
+		return null;
+	}
 }

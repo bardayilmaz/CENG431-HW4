@@ -11,6 +11,7 @@ import product.AccountGroup;
 import product.Groupable;
 import product.IAccount;
 import product.IAccountGroup;
+import product.IRegularAccount;
 import util.InputUtil;
 import valuable.Valuable;
 
@@ -20,6 +21,7 @@ public class ClientUser implements IUser {
 	private List<IAccountGroup> accountGroups;
 	private IBank bank;
 	private String name;
+	private List<Investable> investables;
 	
 	public ClientUser(List<IAccount> accounts, List<IAccountGroup> accountGroups, IBank bank, String name) {
 		super();
@@ -27,6 +29,7 @@ public class ClientUser implements IUser {
 		this.accountGroups = accountGroups;
 		this.bank = bank;
 		this.name = name;
+		this.investables = new ArrayList<>();
 	}
 
 	public ClientUser(IBank bank, String name) {
@@ -34,6 +37,7 @@ public class ClientUser implements IUser {
 		this.accountGroups = new ArrayList<>();
 		this.bank = bank;
 		this.name = name;
+		this.investables = new ArrayList<>();
 	}
 
 	@Override
@@ -46,6 +50,9 @@ public class ClientUser implements IUser {
 		double sum = 0;
 		for(IAccount account : getAccounts()) {
 			sum += account.getBalanceInTRY();
+		}
+		for(Investable investable : this.investables) {
+			sum += investable.getValue();
 		}
 		return sum;
 	}
@@ -90,7 +97,8 @@ public class ClientUser implements IUser {
 	@Override
 	public void displayOptions() {
 		System.out.println("1. Get Total Balance (in TRY)\n2. Create Account\n3. Create Account Group\n4. Add Account to Account Group\n"
-				+ "5. Get Account\n6. Get Account Group\n7. Buy Investable\n8. List Accounts\n9. List Account Groups\n10. Get Balance of Account Group\n0. Exit");
+				+ "5. Switch to Account\n6. Displays Accounts of Account Group\n7. Buy Investable\n8. List Accounts\n9. List Account Groups\n10. Get Balance of Account Group\n"
+				+ "11. List Investables\n12. List Owned Investables\n13. Get Balance of Account Group\n0. Exit");
 	}
 
 	@Override
@@ -156,19 +164,53 @@ public class ClientUser implements IUser {
 			if(account == null) {
 				break;
 			}
-			System.out.println(account.toString());
-			account.displayOptions();
-			int accountOption = account.getOption();
-			account.evaluateOptionInput(accountOption);
+			int accountOption = -1;
+			while(accountOption != 0) {
+				System.out.println(account.toString());
+				account.displayOptions();
+				accountOption = account.getOption();
+				account.evaluateOptionInput(accountOption);
+			}
 			return;
 		} case 6: {
 			String name;
 			System.out.println("Type account group name");
 			name = scanner.next();
 			IAccountGroup accountGroup = getAccountGroup(name);
-			System.out.println(accountGroup.toString());
+			if(accountGroup == null) {
+				return;
+			}
+			accountGroup.display();
 			return;
 		} case 7: {
+			String investableName;
+			int regularAccountId;
+			System.out.println("Type investable name: ");
+			investableName = scanner.next();
+			Investable investable = this.bank.getInvestableByName(investableName);
+			if(investable == null) {
+				break;
+			}
+			try {
+				System.out.println("Type regular account without interest id to money will be withdrawed");
+				regularAccountId = scanner.nextInt();
+			} catch(InputMismatchException exception) {
+				System.out.println("invalid input");
+				break;
+			}
+			IAccount account = getAccount(regularAccountId);
+			if(account == null) {
+				break;
+			}
+			if(!(account instanceof IRegularAccount) || account.getInterestRate() > 0) {
+				System.out.println("account is not regular account without interest");
+				break;
+			}
+			if(account.getBalance() >= investable.getValue()) {
+				account.setBalance(account.getBalance() - investable.getValue());
+				this.investables.add(investable);
+				System.out.println("investable " + investableName + " succesfully purchased!");
+			}
 			return;
 		} case 8: {
 			for(IAccount account : this.accounts) {
@@ -190,6 +232,22 @@ public class ClientUser implements IUser {
 				System.out.println("Balance of group " + accountGroup.getName() + " is: " + accountGroup.getBalanceInTRY());
 			}
 			break;
+		} case 11: {
+			this.bank.displayInvestables();
+			break;
+		} case 12: {
+			this.displayOwnedInvestables();
+			break;
+		} case 13: {
+			String name;
+			System.out.println("Type account group name");
+			name = scanner.next();
+			IAccountGroup accountGroup = getAccountGroup(name);
+			if(accountGroup == null) {
+				return;
+			}
+			System.out.println(accountGroup.getBalanceInTRY());
+			return;
 		}
 		default:
 			System.out.println("invalid input");
@@ -289,6 +347,13 @@ public class ClientUser implements IUser {
 	public String toString() {
 		return "ClientUser [accounts=" + accounts + ", accountGroups=" + accountGroups + ", bank=" + bank + ", name="
 				+ name + "]";
+	}
+
+	@Override
+	public void displayOwnedInvestables() {
+		for(Investable investable : this.investables) {
+			investable.display();
+		}
 	}
 	
 	
